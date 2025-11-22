@@ -5,8 +5,8 @@ import { Equipo3Service, GameTrackingResponse, GameSummary } from '../../../../e
 
 @Component({
   selector: 'app-hola-equipo3',
-  standalone:true,
-  imports:[CommonModule, RouterLink],
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './hola-equipo3.html',
   styleUrls: ['./hola-equipo3.css']
 })
@@ -19,7 +19,7 @@ export class HolaEquipo3Component implements OnInit {
   loading = false;
   error = '';
 
-  constructor(private equipo3Service: Equipo3Service) {}
+  constructor(private equipo3Service: Equipo3Service) { }
 
   ngOnInit(): void {
     this.cargarListaJuegos();

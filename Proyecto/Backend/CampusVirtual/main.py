@@ -10,6 +10,7 @@ from Modules.Equipo2.models.database import create_db_and_tables_equipo2
 from Modules.Equipo3.routes.equipo3_routes import equipo3_router
 #Imports Equipo 4
 from Modules.Equipo4.models.database import create_db_and_tables_equipo4
+from Modules.Equipo3.Calendario.eventos import router as calendario_router
 
 app = FastAPI()
 
@@ -37,15 +38,24 @@ def on_startup() -> None:
     create_db_and_tables_equipo2()
     populate_database_if_empty()
 
-#Router del Equipo 1  ---- Comentado temporalmente debido a fallas en su implementación
-#app.include_router(
-#    equipo1_router,
-#    prefix="/api/equipo1",
-#    tags=["Equipo 1 - Items"],
-#)
+from fastapi.middleware.cors import CORSMiddleware
 
-#Router del Equipo 2
-app.include_router(equipo2_router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-#Router del Equipo 3
-app.include_router(equipo3_router)
+app.include_router(
+    equipo1_router,
+    prefix="/api/equipo1",
+    tags=["Equipo 1 - Items"],
+)
+
+app.include_router(
+    calendario_router,
+    prefix="/api/calendario",   
+    tags=["Equipo 3 - Calendario"],
+)

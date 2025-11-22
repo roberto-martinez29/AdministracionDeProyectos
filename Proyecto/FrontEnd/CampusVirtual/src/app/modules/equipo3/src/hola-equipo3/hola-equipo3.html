@@ -15,26 +15,18 @@
       </div>
 
       <ul class="list-group" *ngIf="juegos.length > 0">
-        <li
-          class="list-group-item d-flex justify-content-between align-items-center"
-          *ngFor="let g of juegos"
-          [class.active]="g.game_id === selectedGameId"
-          (click)="cargarJuego(g.game_id)"
-          style="cursor: pointer;"
-        >
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let g of juegos"
+          [class.active]="g.game_id === selectedGameId" (click)="cargarJuego(g.game_id)" style="cursor: pointer;">
           <div>
             <div><strong>{{ g.sport }}</strong></div>
             <div>{{ g.home_team }} vs {{ g.away_team }}</div>
             <small class="text-muted">{{ g.start_time }}</small>
           </div>
-          <span
-            class="badge"
-            [ngClass]="{
+          <span class="badge" [ngClass]="{
               'bg-success': g.status === 'EN_JUEGO',
               'bg-secondary': g.status === 'PROGRAMADO',
               'bg-dark': g.status === 'FINALIZADO'
-            }"
-          >
+            }">
             {{ g.status }}
           </span>
         </li>
@@ -78,40 +70,40 @@
                 El partido aún no comienza. Vuelve más tarde para ver el seguimiento en vivo.
               </p>
             </div>
-            
+
             <div *ngIf="juego.status !== 'PROGRAMADO'" class="d-flex justify-content-between align-items-center my-3">
               <div class="text-center flex-fill">
                 <h4>{{ juego.home_team }}</h4>
                 <div class="display-5">{{ juego.score.home }}</div>
               </div>
 
-            <div class="mx-4 text-center">
-              <span class="badge bg-success" *ngIf="juego.status === 'EN_JUEGO'">EN JUEGO</span>
-              <span class="badge bg-secondary" *ngIf="juego.status === 'PROGRAMADO'">PROGRAMADO</span>
-              <span class="badge bg-dark" *ngIf="juego.status === 'FINALIZADO'">FINALIZADO</span>
+              <div class="mx-4 text-center">
+                <span class="badge bg-success" *ngIf="juego.status === 'EN_JUEGO'">EN JUEGO</span>
+                <span class="badge bg-secondary" *ngIf="juego.status === 'PROGRAMADO'">PROGRAMADO</span>
+                <span class="badge bg-dark" *ngIf="juego.status === 'FINALIZADO'">FINALIZADO</span>
 
-              <p class="mb-0 mt-2">{{ juego.current_period }}</p>
-              <p class="mb-0" *ngIf="juego.time_remaining">
-                Tiempo restante: {{ juego.time_remaining }}
-              </p>
-            </div>
+                <p class="mb-0 mt-2">{{ juego.current_period }}</p>
+                <p class="mb-0" *ngIf="juego.time_remaining">
+                  Tiempo restante: {{ juego.time_remaining }}
+                </p>
+              </div>
 
-            <div class="text-center flex-fill">
-              <h4>{{ juego.away_team }}</h4>
-              <div class="display-5">{{ juego.score.away }}</div>
+              <div class="text-center flex-fill">
+                <h4>{{ juego.away_team }}</h4>
+                <div class="display-5">{{ juego.score.away }}</div>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
-
     </div>
+
+    <a routerLink="/equipo3" class="btn btn-outline-secondary mt-3 me-2">
+      Regresar al módulo Equipo 3
+    </a>
+
+    <a routerLink="/home" class="btn btn-outline-primary mt-3">
+      Regresar Home
+    </a>
   </div>
-
-  <a routerLink="/equipo3" class="btn btn-outline-secondary mt-3 me-2">
-  Regresar al módulo Equipo 3
-</a>
-
-  <a routerLink="/home" class="btn btn-outline-primary mt-3">
-    Regresar Home
-  </a>
-</div>
