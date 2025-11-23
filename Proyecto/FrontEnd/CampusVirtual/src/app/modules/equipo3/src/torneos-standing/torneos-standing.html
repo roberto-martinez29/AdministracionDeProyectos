@@ -1,0 +1,135 @@
+<div class="container mt-4">
+  <h1 class="mb-2">Torneos y Standing</h1>
+  <p class="text-muted mb-4">
+    Consulta los torneos del campus y la tabla de posiciones de cada uno.
+  </p>
+  <div class="d-flex gap-2 mb-4">
+    <button class="btn btn-outline-secondary" routerLink="/home"> Home Principal </button>
+    <button class="btn btn-outline-secondary" routerLink="/equipo3"> Atrás </button>
+    <button class="btn btn-primary" (click)="cargarTorneos()"> Recargar </button>
+</div>
+
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="loading" class="alert alert-info">
+    Cargando información...
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Si no hay torneos -->
+  <div *ngIf="!loading && !error && torneos.length === 0" class="alert alert-warning">
+    No hay torneos registrados por el momento.
+  </div>
+
+  <div *ngIf="torneos.length > 0" class="row g-4">
+    <!-- Lista de torneos -->
+    <div class="col-md-4">
+      <h4 class="mb-3">Torneos disponibles</h4>
+
+      <div
+        *ngFor="let t of torneos"
+        class="list-group mb-3"
+      >
+        <button
+          type="button"
+          class="list-group-item list-group-item-action"
+          [class.active]="torneoSeleccionado?.tournament_id === t.tournament_id"
+          (click)="seleccionarTorneo(t)"
+        >
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ t.name }}</h5>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': t.status === 'EN_CURSO',
+                'bg-secondary': t.status === 'PROGRAMADO',
+                'bg-dark': t.status === 'FINALIZADO'
+              }"
+            >
+              {{ t.status }}
+            </span>
+          </div>
+          <small class="text-muted">
+            {{ t.sport }} ·
+            {{ t.start_date }} — {{ t.end_date }}
+          </small>
+          <div>
+            <small class="text-muted">
+              Equipos: {{ t.total_teams }}
+            </small>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Detalle + Standing -->
+    <div class="col-md-8" *ngIf="torneoSeleccionado as torneo">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{ torneo.name }}
+          </h4>
+          <p class="card-subtitle mb-2 text-muted">
+            {{ torneo.sport }} ·
+            {{ torneo.start_date }} — {{ torneo.end_date }}
+          </p>
+
+          <p class="mb-3">
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': torneo.status === 'EN_CURSO',
+                'bg-secondary': torneo.status === 'PROGRAMADO',
+                'bg-dark': torneo.status === 'FINALIZADO'
+              }"
+            >
+              {{ torneo.status }}
+            </span>
+            <span class="ms-2 text-muted">
+              Equipos: {{ torneo.total_teams }}
+            </span>
+          </p>
+
+          <h5 class="mt-4">Tabla de posiciones</h5>
+
+          <div *ngIf="standing.length === 0" class="alert alert-info">
+            Aún no hay juegos registrados para este torneo.
+          </div>
+
+          <div class="table-responsive" *ngIf="standing.length > 0">
+            <table class="table table-striped table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Equipo</th>
+                  <th>JJ</th>
+                  <th>G</th>
+                  <th>P</th>
+                  <th>PF</th>
+                  <th>PC</th>
+                  <th>Dif</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tbody>
+                <tr *ngFor="let row of standing; let i = index">
+                  <td>{{ i + 1 }}</td>   <!-- # consecutivo -->
+                  <td>{{ row.team_name }}</td>
+                  <td>{{ row.games_played }}</td>
+                  <td>{{ row.wins }}</td>
+                  <td>{{ row.losses }}</td>
+                  <td>{{ row.points_for }}</td>
+                  <td>{{ row.points_against }}</td>
+                  <td>{{ row.points_diff }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

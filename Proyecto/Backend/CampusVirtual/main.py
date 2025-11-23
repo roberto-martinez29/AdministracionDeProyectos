@@ -48,4 +48,4 @@ def on_startup() -> None:
 app.include_router(equipo2_router)
 
 #Router del Equipo 3
-app.include_router(equipo3_router)
+app.include_router(equipo3_router, prefix="/api/equipo3", tags=["Equipo 3 - Deportes"])
