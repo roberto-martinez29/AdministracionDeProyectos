@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HolaEquipo3Component } from './src/hola-equipo3/hola-equipo3';
 import { Equipo3Home } from './equipo3-home/equipo3-home';
-import { HolaEquipo3 } from './src/hola-equipo3/hola-equipo3';
 import { Calendario } from './src/calendario/calendario';
+import { TorneosStandingComponent } from './src/torneos-standing/torneos-standing';
 
 const routes: Routes = [
     {
@@ -15,11 +15,12 @@ const routes: Routes = [
         component: HolaEquipo3Component,
     },
     {
-        component: HolaEquipo3
-    },
-    {
         path: 'calendario',
         component: Calendario
+    },
+    {
+        path: 'torneos',
+        component: TorneosStandingComponent,
     }
 ];
 

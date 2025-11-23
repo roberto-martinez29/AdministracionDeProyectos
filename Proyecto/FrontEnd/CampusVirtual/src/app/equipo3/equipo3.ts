@@ -28,6 +28,28 @@ export interface GameTrackingResponse {
   score: Score;
 }
 
+export interface TournamentSummary {
+  tournament_id: number;
+  name: string;
+  sport: string;
+  start_date: string;
+  end_date: string;
+  status: string;
+  total_teams: number;
+}
+
+export interface StandingRow {
+  position: number;
+  team_name: string;
+  games_played: number;
+  wins: number;
+  losses: number;
+  points_for: number;
+  points_against: number;
+  points_diff: number;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,4 +70,17 @@ export class Equipo3Service {
   getSeguimientoDemo(): Observable<GameTrackingResponse> {
     return this.http.get<GameTrackingResponse>(`${this.apiUrl}/seguimiento-demo`);
   }
+
+  getTorneos(): Observable<TournamentSummary[]> {
+    return this.http.get<TournamentSummary[]>(`${this.apiUrl}/torneos`);
+  }
+
+  getTorneoDetail(tournamentId: number): Observable<TournamentSummary> {
+    return this.http.get<TournamentSummary>(`${this.apiUrl}/torneos/${tournamentId}`);
+  }
+
+  getTorneoStanding(tournamentId: number): Observable<StandingRow[]> {
+    return this.http.get<StandingRow[]>(`${this.apiUrl}/torneos/${tournamentId}/standing`);
+  }
+
 }
