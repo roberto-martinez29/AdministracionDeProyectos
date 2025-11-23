@@ -1,0 +1,117 @@
+<div class="container mt-4">
+
+  <h2>Seguimiento del juego</h2>
+  <p class="text-muted">
+    Información en tiempo real de los juegos del campus.
+  </p>
+
+  <div class="row">
+    <!-- Columna izquierda: lista de juegos -->
+    <div class="col-md-4 mb-3">
+      <h5>Juegos disponibles</h5>
+
+      <div *ngIf="juegos.length === 0 && !loading" class="alert alert-warning">
+        No hay juegos registrados.
+      </div>
+
+      <ul class="list-group" *ngIf="juegos.length > 0">
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let g of juegos"
+          [class.active]="g.game_id === selectedGameId"
+          (click)="cargarJuego(g.game_id)"
+          style="cursor: pointer;"
+        >
+          <div>
+            <div><strong>{{ g.sport }}</strong></div>
+            <div>{{ g.home_team }} vs {{ g.away_team }}</div>
+            <small class="text-muted">{{ g.start_time }}</small>
+          </div>
+          <span
+            class="badge"
+            [ngClass]="{
+              'bg-success': g.status === 'EN_JUEGO',
+              'bg-secondary': g.status === 'PROGRAMADO',
+              'bg-dark': g.status === 'FINALIZADO'
+            }"
+          >
+            {{ g.status }}
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Columna derecha: detalle del juego seleccionado -->
+    <div class="col-md-8 mb-3">
+
+      <button class="btn btn-primary mb-3" (click)="refrescarJuegoActual()">
+        Recargar datos
+      </button>
+
+      <div *ngIf="loading" class="alert alert-info">
+        Cargando información del juego...
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+
+      <div *ngIf="!loading && juego" class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            {{ juego.sport }} — Juego #{{ juego.game_id }}
+          </h5>
+          <p class="card-subtitle mb-2 text-muted">
+            {{ juego.location }} ·
+            {{ juego.start_time }}
+          </p>
+
+          <div class="d-flex justify-content-between align-items-center my-3">
+            <div class="text-center flex-fill">
+              <h4>{{ juego.home_team }}</h4>
+              <div class="display-5">{{ juego.score.home }}</div>
+            </div>
+
+            <div *ngIf="juego.status === 'PROGRAMADO'" class="mt-3">
+              <span class="badge bg-secondary">PROGRAMADO</span>
+              <p class="mt-3 text-muted">
+                El partido aún no comienza. Vuelve más tarde para ver el seguimiento en vivo.
+              </p>
+            </div>
+            
+            <div *ngIf="juego.status !== 'PROGRAMADO'" class="d-flex justify-content-between align-items-center my-3">
+              <div class="text-center flex-fill">
+                <h4>{{ juego.home_team }}</h4>
+                <div class="display-5">{{ juego.score.home }}</div>
+              </div>
+
+            <div class="mx-4 text-center">
+              <span class="badge bg-success" *ngIf="juego.status === 'EN_JUEGO'">EN JUEGO</span>
+              <span class="badge bg-secondary" *ngIf="juego.status === 'PROGRAMADO'">PROGRAMADO</span>
+              <span class="badge bg-dark" *ngIf="juego.status === 'FINALIZADO'">FINALIZADO</span>
+
+              <p class="mb-0 mt-2">{{ juego.current_period }}</p>
+              <p class="mb-0" *ngIf="juego.time_remaining">
+                Tiempo restante: {{ juego.time_remaining }}
+              </p>
+            </div>
+
+            <div class="text-center flex-fill">
+              <h4>{{ juego.away_team }}</h4>
+              <div class="display-5">{{ juego.score.away }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <button routerLink="/equipo3" class="btn btn-outline-secondary w-100 mt-4">
+  Regresar al módulo Equipo 3
+</button>
+
+<button routerLink="/home" class="btn btn-outline-primary w-100 mt-2">
+  Regresar Home
+</button>
+
