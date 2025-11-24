@@ -15,14 +15,14 @@ export class Calendario {
   private http = inject(HttpClient);
   private router = inject(Router);   // ⭐ NECESARIO PARA EL BOTÓN REGRESAR
 
-  API_URL = 'http://127.0.0.1:8000/api/calendario';
+  API_URL = 'http://127.0.0.1:8000/api/equipo3';
 
   months = [
-    'Jan','Feb','Mar','Apr','May','Jun',
-    'Jul','Aug','Sep','Oct','Nov','Dec'
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
 
-  weekDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   years: number[] = [];
 
@@ -72,7 +72,7 @@ export class Calendario {
     }
 
     for (let day = 1; day <= lastDay; day++) {
-      const fecha = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const fecha = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
       const eventosDelDia = this.eventos.filter(e => e.fecha === fecha);
 

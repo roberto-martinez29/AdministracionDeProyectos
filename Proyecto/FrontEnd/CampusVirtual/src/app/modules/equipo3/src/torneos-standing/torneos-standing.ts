@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Equipo3Service, StandingRow, TournamentSummary } from '../../../../equipo3/equipo3';
+import {
+  Equipo3Service,
+  TournamentSummary,
+  StandingRow,
+} from '../../equipo3';
 
 @Component({
   selector: 'app-torneos-standing',
@@ -12,7 +16,7 @@ import { Equipo3Service, StandingRow, TournamentSummary } from '../../../../equi
 })
 export class TorneosStandingComponent implements OnInit {
   torneos: TournamentSummary[] = [];
-  torneoSeleccionado: TournamentSummary | null = null;
+  torneoSeleccionado?: TournamentSummary;
   standing: StandingRow[] = [];
 
   loading = false;
@@ -27,6 +31,7 @@ export class TorneosStandingComponent implements OnInit {
   cargarTorneos(): void {
     this.loading = true;
     this.error = '';
+
     this.equipo3Service.getTorneos().subscribe({
       next: (data) => {
         this.torneos = data;
@@ -46,23 +51,17 @@ export class TorneosStandingComponent implements OnInit {
 
   seleccionarTorneo(torneo: TournamentSummary): void {
     this.torneoSeleccionado = torneo;
-    this.cargarStanding(torneo.tournament_id);
-  }
-
-  cargarStanding(tournamentId: number): void {
     this.loading = true;
     this.error = '';
-    this.standing = [];
 
-    this.equipo3Service.getTorneoStanding(tournamentId).subscribe({
+    this.equipo3Service.getStanding(torneo.tournament_id).subscribe({
       next: (data) => {
         this.standing = data;
         this.loading = false;
       },
       error: (err) => {
         console.error(err);
-        this.error =
-          'Ocurrió un error al cargar el standing de este torneo.';
+        this.error = 'Ocurrió un error al cargar el standing.';
         this.loading = false;
       },
     });

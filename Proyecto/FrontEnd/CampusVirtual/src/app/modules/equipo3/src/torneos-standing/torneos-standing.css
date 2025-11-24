@@ -1,4 +1,78 @@
-.list-group-item.active {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+:host {
+  --color-rojo-principal: #EE001C;
+  --color-rojo-transparente: #EE001C33;
+  --color-negro: #000000;
+  --color-blanco: #FFFFFF;
+  --color-gris: #F0F0F0;
+}
+
+:host .btn-primary {
+  background-color: var(--color-rojo-principal);
+  border-color: var(--color-rojo-principal);
+  color: var(--color-blanco);
+}
+
+:host .btn-primary:hover,
+:host .btn-primary:focus {
+  background-color: #c80017;
+  border-color: #c80017;
+}
+
+:host .btn-outline-primary,
+:host .btn-outline-secondary {
+  border-color: var(--color-negro);
+  color: var(--color-negro);
+  background-color: transparent;
+}
+
+:host .btn-outline-primary:hover,
+:host .btn-outline-secondary:hover,
+:host .btn-outline-primary:focus,
+:host .btn-outline-secondary:focus {
+  background-color: var(--color-gris);
+  border-color: var(--color-negro);
+  color: var(--color-negro);
+}
+
+:host .btn:focus,
+:host .btn:active,
+:host .btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.15rem var(--color-rojo-transparente);
+}
+
+:host .card {
+  background-color: var(--color-gris);
+  border: none;
+  border-radius: 12px;
+}
+
+:host .list-group-item {
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+}
+
+:host .list-group-item.active {
+  background-color: var(--color-rojo-principal);
+  border-color: var(--color-rojo-principal);
+  color: var(--color-blanco);
+}
+
+:host .table thead th {
+  background-color: #f5f5f5;
+  border-bottom: none;
+}
+
+.badge.bg-success {
+  background-color: #444 !important;
+  color: var(--color-blanco) !important;
+}
+
+:host .btn {
+  border-radius: 999px;
+  min-width: 140px;
+}
+
+:host .btn-primary {
+  padding-inline: 1.8rem;
 }

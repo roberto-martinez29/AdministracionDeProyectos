@@ -8,13 +8,8 @@ from Modules.Equipo2.models.database import create_db_and_tables_equipo2
 #Imports Equipo 3
 # Imports Equipo 3
 from Modules.Equipo3.Routes.equipo3_routes import equipo3_router
-from Modules.Equipo3.Seguimiento_Juegos.seguimiento_juegos import seguimiento_router
-from Modules.Equipo3.Calendario.eventos import router as calendario_router
-from Modules.Equipo3.Registro_equipos.registro_routes import registro_router
-from Modules.Equipo3.Registro_equipos.database import create_db_and_tables as db3
 #Imports Equipo 4
 from Modules.Equipo4.models.database import create_db_and_tables_equipo4
-from Modules.Equipo3.Calendario.eventos import router as calendario_router
 
 app = FastAPI()
 
@@ -40,9 +35,7 @@ def on_startup() -> None:
 #    create_db_and_tables_equipo4() ---Comentado temporalmente debido a fallas en su implementación
     #Funcion para equipo2
     create_db_and_tables_equipo2()
-    populate_database_if_empty()
-    #Funcion para equipo 3
-    db3()
+    populate_database_if_empty()    
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -60,20 +53,26 @@ app.include_router(
     tags=["Equipo 1 - Items"],
 )
 
-app.include_router(
-    calendario_router,
-    prefix="/api/calendario",   
-    tags=["Equipo 3 - Calendario"],
-)
+# app.include_router(
+#     calendario_router,
+#     prefix="/api/calendario",   
+#     tags=["Equipo 3 - Calendario"],
+# )
     
-app.include_router(
-    seguimiento_router,
-    prefix="/api",
-    tags=["Equipo 3 - Deportes y seguimiento de juegos"],
-)
+# app.include_router(
+#     seguimiento_router,
+#     prefix="/api",
+#     tags=["Equipo 3 - Deportes y seguimiento de juegos"],
+# )
+
+# app.include_router(
+#     registro_router,
+#     prefix="/api/registro",
+#     tags=["Equipo 3 - Registro de participantes"],
+# )
 
 app.include_router(
-    registro_router,
-    prefix="/api/registro",
-    tags=["Equipo 3 - Registro de participantes"],
+    equipo3_router, 
+    prefix="/api/equipo3", 
+    tags=["Equipo 3 - Deportes"]
 )

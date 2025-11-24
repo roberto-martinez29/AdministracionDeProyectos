@@ -25,7 +25,7 @@ export class Registro {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  API_URL = 'http://127.0.0.1:8000/api/registro';
+  API_URL = 'http://127.0.0.1:8000/api/equipo3';
 
   constructor() { }
 

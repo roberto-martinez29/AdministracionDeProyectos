@@ -1,23 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Equipo3Service, GameSummary, GameTrackingResponse } from '../../../../equipo3/equipo3';
+import {
+  Equipo3Service,
+  GameSummary,
+  GameTrackingResponse,
+} from '../../equipo3';
 
 @Component({
-  selector: 'app-hola-equipo3',
+  selector: 'app-seguimiento',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './hola-equipo3.html',
-  styleUrls: ['./hola-equipo3.css']
+  templateUrl: './seguimiento.html',
+  styleUrls: ['./seguimiento.css'],
 })
 export class HolaEquipo3Component implements OnInit {
-
   juegos: GameSummary[] = [];
-  juego!: GameTrackingResponse;
+
   selectedGameId: number | null = null;
 
+  juego!: GameTrackingResponse;
+
   loading = false;
-  error = '';
+  error: string | null = null;
 
   constructor(private equipo3Service: Equipo3Service) { }
 
@@ -25,35 +30,32 @@ export class HolaEquipo3Component implements OnInit {
     this.cargarListaJuegos();
   }
 
+  // Cargar lista de juegos desde el backend
   cargarListaJuegos(): void {
     this.loading = true;
-    this.error = '';
+    this.error = null;
 
-    this.equipo3Service.getGames().subscribe({
-      next: (lista) => {
-        this.juegos = lista;
+    this.equipo3Service.getListaJuegos().subscribe({
+      next: (data: GameSummary[]) => {
+        this.juegos = data;
         this.loading = false;
-
-        // Si hay juegos, cargamos el primero por defecto
-        if (this.juegos.length > 0) {
-          this.cargarJuego(this.juegos[0].game_id);
-        }
       },
       error: (err) => {
         console.error(err);
         this.error = 'Ocurrió un error al obtener la lista de juegos.';
         this.loading = false;
-      }
+      },
     });
   }
 
+  // Cuando haces click en un juego de la lista
   cargarJuego(gameId: number): void {
-    this.loading = true;
-    this.error = '';
     this.selectedGameId = gameId;
+    this.loading = true;
+    this.error = null;
 
-    this.equipo3Service.getGameDetail(gameId).subscribe({
-      next: (data) => {
+    this.equipo3Service.getSeguimientoJuego(gameId).subscribe({
+      next: (data: GameTrackingResponse) => {
         this.juego = data;
         this.loading = false;
       },
@@ -61,10 +63,11 @@ export class HolaEquipo3Component implements OnInit {
         console.error(err);
         this.error = 'Ocurrió un error al cargar el seguimiento del juego.';
         this.loading = false;
-      }
+      },
     });
   }
 
+  // Botón "Refrescar juego actual"
   refrescarJuegoActual(): void {
     if (this.selectedGameId !== null) {
       this.cargarJuego(this.selectedGameId);

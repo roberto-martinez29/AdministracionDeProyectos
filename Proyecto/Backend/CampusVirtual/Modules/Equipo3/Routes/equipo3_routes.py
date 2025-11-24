@@ -1,235 +1,196 @@
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException
-from sqlmodel import SQLModel
+from typing import List
+from fastapi import APIRouter, HTTPException, Depends
+from pathlib import Path
+import json
+from sqlmodel import Session
+from Modules.Equipo3.Registro_equipos.database import get_session
+from Modules.Equipo3.Registro_equipos.crud import registrar_participante, obtener_info_equipo, obtener_alumnos_por_equipo, obtener_lista_equipos
+from Modules.Equipo3.Calendario.models import Evento
 
-
-class Score(SQLModel):
-    home: int
-    away: int
-
-class GameSummary(SQLModel):
-    game_id: int
-    sport: str
-    home_team: str
-    away_team: str
-    start_time: str
-    status: str
-
-class GameTrackingResponse(SQLModel):
-    game_id: int
-    sport: str
-    home_team: str
-    away_team: str
-    location: str
-    start_time: str
-    status: str
-    current_period: str
-    time_remaining: Optional[str]
-    score: Score
-
-class TournamentSummary(SQLModel):
-    tournament_id: int
-    name: str
-    sport: str
-    start_date: str
-    end_date: str
-    status: str 
-    total_teams: int
-
-
-class StandingRow(SQLModel):
-    position: int
-    team_name: str
-    games_played: int
-    wins: int
-    losses: int
-    points_for: int
-    points_against: int
-    points_diff: int
-
-
-equipo3_router = APIRouter(
-    prefix="/equipo3",
-    tags=["Equipo 3 - Deportes y seguimiento de juegos"],
+from Modules.Equipo3.models import (
+    GameSummary,
+    GameTrackingResponse,
+    TournamentSummary,
+    StandingRow,
+    Score,
 )
 
-FAKE_GAMES = {
-    1: GameTrackingResponse(
-        game_id=1,
-        sport="Básquetbol",
-        home_team="Lobos Ingeniería",
-        away_team="Halcones Administración",
-        location="Gimnasio Campus Arteaga",
-        start_time="2024-11-18T18:00:00",
-        status="EN_JUEGO",
-        current_period="3er cuarto",
-        time_remaining="04:32",
-        score=Score(home=45, away=39),
-    ),
-    2: GameTrackingResponse(
-        game_id=2,
-        sport="Fútbol",
-        home_team="Tigres Campus",
-        away_team="Leones Contaduría",
-        location="Campo 3",
-        start_time="2024-11-19T20:30:00",
-        status="PROGRAMADO",
-        current_period="",
-        time_remaining=None,
-        score=Score(home=0, away=0),
-    ),
-}
+router = APIRouter(tags=["Equipo 3 - Deportes"])
+BASE_DIR = Path(__file__).resolve().parent.parent  # -> Modules/Equipo3
+DB_PATH = BASE_DIR / "deportes.db"
+DB_PATH_CAL = BASE_DIR / "calendar_db.json"
 
-FAKE_TOURNAMENTS: dict[int, TournamentSummary] = {
-    1: TournamentSummary(
-        tournament_id=1,
-        name="Torneo Interfacultades 2024",
-        sport="Básquetbol",
-        start_date="2024-10-01",
-        end_date="2024-11-30",
-        status="EN_CURSO",
-        total_teams=8,
-    ),
-    2: TournamentSummary(
-        tournament_id=2,
-        name="Liga de Futbol Nocturna",
-        sport="Fútbol",
-        start_date="2024-09-15",
-        end_date="2024-12-10",
-        status="PROGRAMADO",
-        total_teams=10,
-    ),
-}
+import sqlite3
+def get_conn():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+# -----------------------
+#   ENDPOINTS JUEGOS
+# -----------------------
 
-FAKE_STANDINGS: dict[int, list[StandingRow]] = {
-    1: [
-        StandingRow(
-            position=1,
-            team_name="Lobos Ingeniería",
-            games_played=5,
-            wins=5,
-            losses=0,
-            points_for=380,
-            points_against=320,
-            points_diff=60,
-        ),
-        StandingRow(
-            position=2,
-            team_name="Halcones Administración",
-            games_played=5,
-            wins=3,
-            losses=2,
-            points_for=350,
-            points_against=340,
-            points_diff=10,
-        ),
-        StandingRow(
-            position=3,
-            team_name="Jaguares Arquitectura",
-            games_played=5,
-            wins=2,
-            losses=3,
-            points_for=330,
-            points_against=345,
-            points_diff=-15,
-        ),
-    ],
-    2: [
-        StandingRow(
-            position=1,
-            team_name="Tigres Campus",
-            games_played=0,
-            wins=0,
-            losses=0,
-            points_for=0,
-            points_against=0,
-            points_diff=0,
-        ),
-        StandingRow(
-            position=2,
-            team_name="Leones Contaduría",
-            games_played=0,
-            wins=0,
-            losses=0,
-            points_for=0,
-            points_against=0,
-            points_diff=0,
-        ),
-    ],
-}
-
-@equipo3_router.get(
-    "/juegos",
-    response_model=List[GameSummary],
-    summary="Obtener lista de juegos",
-    description="Devuelve un listado resumen de los juegos disponibles para seguimiento."
-)
-
-def get_games() -> list[GameSummary]:
-    games: list[GameSummary] = []
-    for game in FAKE_GAMES.values():
-        games.append(
-            GameSummary(
-                game_id=game.game_id,
-                sport=game.sport,
-                home_team=game.home_team,
-                away_team=game.away_team,
-                start_time=game.start_time,
-                status=game.status,
-            )
+@router.get("/juegos", response_model=List[GameSummary])
+def listar_juegos() -> List[GameSummary]:
+    with get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT
+                j.id AS game_id,
+                j.deporte AS sport,
+                el.nombre AS home_team,
+                ev.nombre AS away_team,
+                j.fecha AS start_time,
+                j.estatus AS status
+            FROM juegos j
+            JOIN equipos el ON j.equipo_local_id = el.id
+            JOIN equipos ev ON j.equipo_visitante_id = ev.id
+            ORDER BY j.fecha ASC, j.id ASC;
+            """
         )
-    return games
+        rows = cur.fetchall()
 
-@equipo3_router.get(
-    "/juegos/{game_id}",
-    response_model=GameTrackingResponse,
-    summary="Obtener detalle de un juego",
-    description="Devuelve la información detallada de un juego para seguimiento en tiempo real."
-)
-def get_game_detail(game_id: int) -> GameTrackingResponse:
-    game = FAKE_GAMES.get(game_id)
-    if not game:
+    return [GameSummary(**dict(row)) for row in rows]
+
+
+@router.get("/juegos/{game_id}", response_model=GameTrackingResponse)
+def obtener_seguimiento_juego(game_id: int) -> GameTrackingResponse:
+    with get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT
+                j.id AS game_id,
+                j.deporte AS sport,
+                el.nombre AS home_team,
+                ev.nombre AS away_team,
+                j.ubicacion AS location,
+                j.fecha AS start_time,
+                j.estatus AS status,
+                j.periodo AS current_period,      -- 👈 CAMBIA ESTO
+                j.tiempo_restante AS time_remaining,
+                j.marcador_local AS home_score,
+                j.marcador_visitante AS away_score
+            FROM juegos j
+            JOIN equipos el ON j.equipo_local_id = el.id
+            JOIN equipos ev ON j.equipo_visitante_id = ev.id
+            WHERE j.id = ?;
+            """,
+            (game_id,),
+        )
+        row = cur.fetchone()
+
+    if row is None:
         raise HTTPException(status_code=404, detail="Juego no encontrado")
-    return game
 
-@equipo3_router.get(
-    "/seguimiento-demo",
-    response_model=GameTrackingResponse,
-    summary="Ejemplo de seguimiento de un juego",
-    description="Devuelve información de ejemplo de un partido para probar la integración."
-)
-def get_demo_tracking() -> GameTrackingResponse:
-    return FAKE_GAMES[1]
+    score = Score(home=row["home_score"], away=row["away_score"])
 
-@equipo3_router.get(
-    "/torneos",
-    response_model=list[TournamentSummary],
-    summary="Obtener lista de torneos",
-    description="Devuelve todos los torneos."
-)
-def get_torneos() -> list[TournamentSummary]:
-    return list(FAKE_TOURNAMENTS.values())
+    return GameTrackingResponse(
+        game_id=row["game_id"],
+        sport=row["sport"],
+        home_team=row["home_team"],
+        away_team=row["away_team"],
+        location=row["location"],
+        start_time=row["start_time"],
+        status=row["status"],
+        current_period=row["current_period"],
+        time_remaining=str(row["time_remaining"]) if row["time_remaining"] is not None else None,
+        score=score,
+    )
 
-@equipo3_router.get(
-    "/torneos/{tournament_id}",
-    response_model=TournamentSummary,
-    summary="Obtener detalle de torneo",
-    description="Devuelve la información del torneo."
-)
-def get_torneo_detail(tournament_id: int) -> TournamentSummary:
-    torneo = FAKE_TOURNAMENTS.get(tournament_id)
-    if not torneo:
-        raise HTTPException(status_code=404, detail="Torneo no encontrado")
-    return torneo
 
-@equipo3_router.get(
-    "/torneos/{tournament_id}/standing",
-    response_model=list[StandingRow],
-    summary="Standing de torneo",
-    description="Devuelve la tabla de posiciones del torneo."
-)
-def get_torneo_standing(tournament_id: int) -> list[StandingRow]:
-    standing = FAKE_STANDINGS.get(tournament_id)
-    if standing is None:
+# -----------------------
+#   ENDPOINTS TORNEOS
+# -----------------------
+
+@router.get("/torneos", response_model=List[TournamentSummary])
+def listar_torneos() -> List[TournamentSummary]:
+    with get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT
+                id          AS tournament_id,
+                nombre      AS name,
+                deporte     AS sport,
+                fecha_inicio AS start_date,
+                fecha_fin   AS end_date,
+                estatus     AS status,
+                total_equipos AS total_teams
+            FROM torneos
+            ORDER BY fecha_inicio ASC, id ASC;
+            """
+        )
+        rows = cur.fetchall()
+
+    return [TournamentSummary(**dict(row)) for row in rows]
+
+
+@router.get("/torneos/{tournament_id}/standing",
+            response_model=List[StandingRow])
+def obtener_standing(tournament_id: int) -> List[StandingRow]:
+    with get_conn() as conn:
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT
+                s.posicion      AS position,
+                e.nombre        AS team_name,
+                s.juegos_juegos AS games_played,
+                s.ganados       AS wins,
+                s.perdidos      AS losses,
+                s.puntos_favor  AS points_for,
+                s.puntos_contra AS points_against,
+                s.diferencia    AS points_diff
+            FROM standings s
+            JOIN equipos e ON s.equipo_id = e.id
+            WHERE s.torneo_id = ?
+            ORDER BY s.posicion ASC;
+            """,
+            (tournament_id,),
+        )
+        rows = cur.fetchall()
+
+    if not rows:
+        # puede ser 404 o lista vacía; yo dejo 404 para que se note
         raise HTTPException(status_code=404, detail="Standing no encontrado")
-    return standing
+
+    return [StandingRow(**dict(row)) for row in rows]
+
+#registro
+@router.post("/registrar")
+def registrar(data: dict, session: Session = Depends(get_session)):
+    return registrar_participante(data, session)
+
+@router.get("/equipo/{equipo_id}")
+def ver_equipo(equipo_id: int, session: Session = Depends(get_session)):
+    return obtener_info_equipo(equipo_id, session)
+
+@router.get("/equipo/{equipo_id}/alumnos")
+def ver_alumnos(equipo_id: int, session: Session = Depends(get_session)):
+    return obtener_alumnos_por_equipo(equipo_id, session)
+
+@router.get("/equipo")
+def get_equipos(session: Session = Depends(get_session)):
+    return obtener_lista_equipos(session)
+
+#calendario
+@router.get("/eventos")
+def obtener_eventos():
+    with open(DB_PATH_CAL, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+@router.post("/eventos")
+def agregar_evento(evento: Evento):
+    with open(DB_PATH_CAL, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    data.append(evento.dict())
+
+    with open(DB_PATH_CAL, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
+
+    return {"mensaje": "Evento agregado"}
+
+equipo3_router = router

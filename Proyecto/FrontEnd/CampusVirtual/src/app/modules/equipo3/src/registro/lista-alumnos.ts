@@ -38,7 +38,7 @@ export class ListaAlumnos {
 
   private http = inject(HttpClient);
 
-  API_URL = 'http://127.0.0.1:8000/api/registro';
+  API_URL = 'http://127.0.0.1:8000/api/equipo3';
 
   ngAfterViewInit() {
     this.getEquipo();
