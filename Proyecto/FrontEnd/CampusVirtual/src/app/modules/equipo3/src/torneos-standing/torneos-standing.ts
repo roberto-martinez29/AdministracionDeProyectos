@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-import {
-  Equipo3Service,
-  TournamentSummary,
-  StandingRow,
-} from '../../../../equipo3/equipo3';
+import { Equipo3Service, StandingRow, TournamentSummary } from '../../../../equipo3/equipo3';
 
 @Component({
   selector: 'app-torneos-standing',
@@ -23,7 +18,7 @@ export class TorneosStandingComponent implements OnInit {
   loading = false;
   error = '';
 
-  constructor(private equipo3Service: Equipo3Service) {}
+  constructor(private equipo3Service: Equipo3Service) { }
 
   ngOnInit(): void {
     this.cargarTorneos();

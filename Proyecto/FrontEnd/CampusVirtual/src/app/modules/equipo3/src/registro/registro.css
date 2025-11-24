@@ -1,0 +1,99 @@
+:host {
+    --rojo-acento: #EE001C;
+    --fondo-oscuro: #0b1216;
+    --tarjeta-oscura: #0f1720;
+    --gris-muted: #9aa4ad;
+    --gris-claro: #F0F0F0;
+    --blanco: #FFFFFF;
+
+    display: block;
+    min-height: 100vh;
+    /* background-color: var(--fondo-oscuro); */
+    color: var(--blanco);
+    padding-bottom: 2rem;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Contenedor y título */
+.page-title {
+    background-color: var(--rojo-acento);
+    color: var(--blanco);
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+/* Card */
+.equipos-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    /* color: var(--blanco); */
+    overflow: hidden;
+}
+
+.equipos-card .card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.equipos-card .card-header .card-title {
+    /* color: var(--blanco); */
+    font-weight: 600;
+}
+
+.equipos-card .list-group-item {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.equipos-card .list-group-item .equipo-nombre {
+    font-weight: 600;
+    color: black;
+}
+
+.equipos-card .list-group-item .equipo-meta {
+    font-size: 0.85rem;
+    color: black;
+}
+
+.equipos-card .acciones-row {
+    background: var(--rojo-acento);
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Botones con estilo del esquema de colores */
+.btn-registrar {
+    background-color: var(--rojo-acento);
+    border-color: var(--rojo-acento);
+    color: var(--blanco);
+}
+
+.btn-registrar:hover,
+.btn-registrar:focus {
+    filter: brightness(0.95);
+}
+
+/* Botón secundario: gris suave invertido para mantener contraste */
+.btn-lista-participantes {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--blanco);
+}
+
+/* Botón Atrás: outline claro */
+.btn-atras {
+    color: black;
+    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--blanco);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 575.98px) {
+    .equipos-card .card-body .d-flex {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-atras {
+        width: 100%;
+    }
+}

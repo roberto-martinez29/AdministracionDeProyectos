@@ -1,0 +1,34 @@
+:host {
+    --rojo-acento: #EE001C;
+    --fondo-oscuro: #0b1216;
+    --tarjeta-oscura: #0f1720;
+    --gris-muted: #9aa4ad;
+    --gris-claro: #F0F0F0;
+    --blanco: #FFFFFF;
+
+    display: block;
+    min-height: 100vh;
+    /* background-color: var(--fondo-oscuro); */
+    color: var(--blanco);
+    padding-bottom: 2rem;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.btn-opcion {
+    color: var(--blanco);
+    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--rojo-acento);
+}
+
+.btn-atras {
+    color: var(--rojo-acento);
+    border-color: var(--rojo-acento);
+
+}
+
+.page-title {
+    background-color: var(--rojo-acento);
+    color: var(--blanco);
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}

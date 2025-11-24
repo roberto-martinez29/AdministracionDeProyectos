@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Equipo3Service, GameTrackingResponse, GameSummary } from '../../../../equipo3/equipo3';
+import { Equipo3Service, GameSummary, GameTrackingResponse } from '../../../../equipo3/equipo3';
 
 @Component({
   selector: 'app-hola-equipo3',

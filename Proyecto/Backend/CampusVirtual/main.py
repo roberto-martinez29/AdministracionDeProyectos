@@ -7,7 +7,11 @@ from Modules.Equipo2.routes.equipo2_routes import equipo2_router, populate_datab
 from Modules.Equipo2.models.database import create_db_and_tables_equipo2
 #Imports Equipo 3
 # Imports Equipo 3
-from Modules.Equipo3.routes.equipo3_routes import equipo3_router
+from Modules.Equipo3.Routes.equipo3_routes import equipo3_router
+from Modules.Equipo3.Seguimiento_Juegos.seguimiento_juegos import seguimiento_router
+from Modules.Equipo3.Calendario.eventos import router as calendario_router
+from Modules.Equipo3.Registro_equipos.registro_routes import registro_router
+from Modules.Equipo3.Registro_equipos.database import create_db_and_tables as db3
 #Imports Equipo 4
 from Modules.Equipo4.models.database import create_db_and_tables_equipo4
 from Modules.Equipo3.Calendario.eventos import router as calendario_router
@@ -37,6 +41,8 @@ def on_startup() -> None:
     #Funcion para equipo2
     create_db_and_tables_equipo2()
     populate_database_if_empty()
+    #Funcion para equipo 3
+    db3()
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -58,4 +64,16 @@ app.include_router(
     calendario_router,
     prefix="/api/calendario",   
     tags=["Equipo 3 - Calendario"],
+)
+    
+app.include_router(
+    seguimiento_router,
+    prefix="/api",
+    tags=["Equipo 3 - Deportes y seguimiento de juegos"],
+)
+
+app.include_router(
+    registro_router,
+    prefix="/api/registro",
+    tags=["Equipo 3 - Registro de participantes"],
 )

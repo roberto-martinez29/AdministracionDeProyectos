@@ -66,7 +66,7 @@ export class Equipo3Service {
   getGameDetail(gameId: number): Observable<GameTrackingResponse> {
     return this.http.get<GameTrackingResponse>(`${this.apiUrl}/juegos/${gameId}`);
   }
-  
+
   getSeguimientoDemo(): Observable<GameTrackingResponse> {
     return this.http.get<GameTrackingResponse>(`${this.apiUrl}/seguimiento-demo`);
   }
